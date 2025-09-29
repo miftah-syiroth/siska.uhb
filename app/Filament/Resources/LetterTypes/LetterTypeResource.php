@@ -2,17 +2,24 @@
 
 namespace App\Filament\Resources\LetterTypes;
 
-use App\Filament\Resources\LetterTypes\Pages\CreateLetterType;
-use App\Filament\Resources\LetterTypes\Pages\EditLetterType;
-use App\Filament\Resources\LetterTypes\Pages\ListLetterTypes;
-use App\Filament\Resources\LetterTypes\Schemas\LetterTypeForm;
-use App\Filament\Resources\LetterTypes\Tables\LetterTypesTable;
+use App\Filament\Resources\LetterTypes\Pages\ManageLetterTypes;
 use App\Models\LetterType;
 use BackedEnum;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\EditAction;
+use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\TextInput;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
+use Filament\Tables\Columns\IconColumn;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Storage;
 
 class LetterTypeResource extends Resource
 {
@@ -22,29 +29,80 @@ class LetterTypeResource extends Resource
 
     protected static ?string $recordTitleAttribute = 'name';
 
+    protected function handleRecordUpdate(Model $record, array $data): Model
+    {
+        if (isset($data['template_path']) && $data['template_path'] instanceof \Livewire\Features\SupportFileUploads\TemporaryUploadedFile) {
+            Storage::disk('public')->delete($record->template_path);
+        }
+        $record->update($data);
+
+        return $record;
+    }
+
     public static function form(Schema $schema): Schema
     {
-        return LetterTypeForm::configure($schema);
+        return $schema
+            ->components([
+                TextInput::make('name')
+                    ->required(),
+                FileUpload::make('template_path')
+                    ->disk('public')
+                    ->label('Template File')
+                    ->directory('letter-templates')
+                    ->openable()
+                    ->required()
+                    ->maxSize(1024),
+            ]);
     }
 
     public static function table(Table $table): Table
     {
-        return LetterTypesTable::configure($table);
-    }
-
-    public static function getRelations(): array
-    {
-        return [
-            //
-        ];
+        return $table
+            ->recordTitleAttribute('name')
+            ->columns([
+                TextColumn::make('name')
+                    ->searchable(),
+                IconColumn::make('template_path')
+                    ->label('Template')
+                    ->icon(Heroicon::DocumentText)
+                    ->url(fn (LetterType $record): ?string => $record->template_path ? asset('storage/'.$record->template_path) : null),
+                TextColumn::make('deleted_at')
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('created_at')
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+            ])
+            ->defaultSort('name', direction: 'asc')
+            ->filters([
+                //
+            ])
+            ->recordActions([
+                EditAction::make(),
+                DeleteAction::make()
+                    ->before(function (Model $record) {
+                        Storage::disk('public')->delete($record->template_path);
+                    }),
+            ])
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    DeleteBulkAction::make()
+                        ->action(function (Collection $records) {
+                            $records->each(function ($record) {
+                                Storage::disk('public')->delete($record->template_path);
+                                $record->delete();
+                            });
+                        }),
+                ]),
+            ]);
     }
 
     public static function getPages(): array
     {
         return [
-            'index' => ListLetterTypes::route('/'),
-            'create' => CreateLetterType::route('/create'),
-            'edit' => EditLetterType::route('/{record}/edit'),
+            'index' => ManageLetterTypes::route('/'),
         ];
     }
 }
