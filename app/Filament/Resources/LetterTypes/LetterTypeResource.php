@@ -81,10 +81,10 @@ class LetterTypeResource extends Resource
             ])
             ->recordActions([
                 EditAction::make(),
-                DeleteAction::make()
-                    ->before(function (Model $record) {
-                        Storage::disk('public')->delete($record->template_path);
-                    }),
+                // DeleteAction::make()
+                //     ->before(function (Model $record) {
+                //         Storage::disk('public')->delete($record->template_path);
+                //     }),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
