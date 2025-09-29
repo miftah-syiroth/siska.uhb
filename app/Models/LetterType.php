@@ -3,8 +3,19 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
 
 class LetterType extends Model
 {
-    //
+    use HasUuids;
+    
+    protected $fillable = [
+        'name',
+        'template_path',
+    ];
+
+    // public function letters()
+    // {
+    //     return $this->hasMany(Letter::class);
+    // }
 }
