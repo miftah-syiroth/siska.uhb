@@ -63,12 +63,8 @@ class LetterTypeResource extends Resource
             ->columns([
                 TextColumn::make('name')
                     ->searchable(),
-                SpatieMediaLibraryImageColumn::make('template')
-                    ->url(fn (LetterType $record): ?string => $record->getFirstMediaUrl()),
-                // IconColumn::make('template_path')
-                //     ->label('Template')
-                //     ->icon(Heroicon::DocumentText)
-                //     ->url(fn (LetterType $record): ?string => $record->template_path ? asset('storage/'.$record->template_path) : null),
+                IconColumn::make('template_url')
+                    ->label('Template'),
                 TextColumn::make('deleted_at')
                     ->dateTime()
                     ->sortable()

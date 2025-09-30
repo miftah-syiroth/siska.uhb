@@ -18,6 +18,12 @@ class LetterType extends Model implements HasMedia
         'name',
     ];
 
+    // getting the first media url
+    public function getTemplateUrl(): ?string
+    {
+        return $this->getFirstMediaUrl(self::MEDIA_COLLECTION);
+    }
+
     // public function letters()
     // {
     //     return $this->hasMany(Letter::class);
