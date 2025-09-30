@@ -20,6 +20,8 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Storage;
+use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
+use Filament\Tables\Columns\SpatieMediaLibraryImageColumn;
 
 class LetterTypeResource extends Resource
 {
@@ -45,13 +47,12 @@ class LetterTypeResource extends Resource
             ->components([
                 TextInput::make('name')
                     ->required(),
-                FileUpload::make('template_path')
+                SpatieMediaLibraryFileUpload::make('template')
+                    ->collection(LetterType::MEDIA_COLLECTION)
                     ->disk('public')
                     ->label('Template File')
-                    ->directory('letter-templates')
-                    ->openable()
-                    ->required()
-                    ->maxSize(1024),
+                    ->maxSize(1024)
+                    ->required(),
             ]);
     }
 
@@ -62,10 +63,12 @@ class LetterTypeResource extends Resource
             ->columns([
                 TextColumn::make('name')
                     ->searchable(),
-                IconColumn::make('template_path')
-                    ->label('Template')
-                    ->icon(Heroicon::DocumentText)
-                    ->url(fn (LetterType $record): ?string => $record->template_path ? asset('storage/'.$record->template_path) : null),
+                SpatieMediaLibraryImageColumn::make('template')
+                    ->url(fn (LetterType $record): ?string => $record->getFirstMediaUrl()),
+                // IconColumn::make('template_path')
+                //     ->label('Template')
+                //     ->icon(Heroicon::DocumentText)
+                //     ->url(fn (LetterType $record): ?string => $record->template_path ? asset('storage/'.$record->template_path) : null),
                 TextColumn::make('deleted_at')
                     ->dateTime()
                     ->sortable()
@@ -91,7 +94,6 @@ class LetterTypeResource extends Resource
                     DeleteBulkAction::make()
                         ->action(function (Collection $records) {
                             $records->each(function ($record) {
-                                Storage::disk('public')->delete($record->template_path);
                                 $record->delete();
                             });
                         }),
