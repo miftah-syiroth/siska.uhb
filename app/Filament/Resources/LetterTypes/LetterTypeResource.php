@@ -58,13 +58,17 @@ class LetterTypeResource extends Resource
 
     public static function table(Table $table): Table
     {
+        // kenapa kalau klik row malah muncul edit button?
         return $table
+            ->recordAction(null)
             ->recordTitleAttribute('name')
             ->columns([
                 TextColumn::make('name')
                     ->searchable(),
                 IconColumn::make('template_url')
-                    ->label('Template'),
+                    ->label('Template')
+                    ->icon(fn (Model $record) => 'heroicon-o-document-text')
+                    ->url(fn (Model $record) => $record->template_url),
                 TextColumn::make('deleted_at')
                     ->dateTime()
                     ->sortable()

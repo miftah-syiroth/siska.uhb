@@ -6,25 +6,20 @@ use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
 
-class Letter extends Model
+class Letter extends Model implements HasMedia
 {
-    use HasUuids;
-    use SoftDeletes;
+    use HasUuids, SoftDeletes, InteractsWithMedia;
+
+    const MEDIA_COLLECTION = 'letters';
 
     protected $fillable = [
-        'user_id',
-        'letter_type_id',
+        'ticket_id', // nomor tiket request
         'number', // nomor surat jika sudah terbit
-        'ticket_number', // nomor tiket request
-        'subject',
-        'recipient',
-        'recipient_address',
         'letter_date',
         'expired_date',
-        'status',
-        'note',
-        'file_path',
         'json_content',
     ];
 
@@ -35,13 +30,13 @@ class Letter extends Model
         'json_content' => 'array',
     ];
 
-    public function user(): BelongsTo
+    /**
+     * Get the ticket that owns the Letter
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function ticket(): BelongsTo
     {
-        return $this->belongsTo(User::class);
-    }
-
-    public function letterType(): BelongsTo
-    {
-        return $this->belongsTo(LetterType::class);
+        return $this->belongsTo(Ticket::class, 'ticket_id');
     }
 }

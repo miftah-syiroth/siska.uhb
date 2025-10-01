@@ -11,28 +11,18 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('letters', function (Blueprint $table) {
+        Schema::create('tickets', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->foreignUuid('user_id')->constrained('users');
             $table->foreignUuid('letter_type_id')->constrained('letter_types');
+
             $table->string('number')->index();
-            $table->string('ticket_number')->index();
             $table->string('subject');
-            // penerima
             $table->string('recipient');
-            // alamat penerima
             $table->text('recipient_address');
-            // tanggal surat
-            $table->date('letter_date')->nullable();
-            // expired surat
-            $table->date('expired_date')->nullable();
-            // status surat
-            $table->string('status')->index();;
-            // catatan surat
+            
+            $table->string('status')->index();
             $table->text('note')->nullable();
-            // file surat
-            $table->string('file_path')->nullable();
-            // content json
             $table->json('json_content')->nullable();
 
             $table->softDeletes();
@@ -45,6 +35,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('letters');
+        Schema::dropIfExists('tickets');
     }
 };

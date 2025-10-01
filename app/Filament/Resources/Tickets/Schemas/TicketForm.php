@@ -1,21 +1,20 @@
 <?php
 
-namespace App\Filament\Resources\Letters\Schemas;
+namespace App\Filament\Resources\Tickets\Schemas;
 
-use App\Enums\LetterStatusEnum;
-use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Textarea;
 use Filament\Schemas\Schema;
 
-class LetterForm
+class TicketForm
 {
     public static function configure(Schema $schema): Schema
     {
         return $schema
             ->components([
                 Select::make('letter_type_id')
+                    ->label('Jenis Surat')
                     ->relationship('letterType', 'name')
                     ->required(),
                 TextInput::make('subject')
@@ -27,12 +26,11 @@ class LetterForm
                     ->columnSpanFull(),
                 Textarea::make('recipient_address')
                     ->label('Alamat Penerima')
-                    ->required()
+                ->required()
                     ->columnSpanFull(),
-                // status hanya muncul jika role adalah admin
-                Select::make('status')
-                    ->options(LetterStatusEnum::class)
-                    ->required(),
+                Textarea::make('note')
+                    ->label('Catatan')
+                    ->columnSpanFull(),
             ]);
     }
 }

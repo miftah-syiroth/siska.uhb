@@ -2,7 +2,7 @@
 
 namespace App\Enums;
 
-enum LetterStatusEnum: string
+enum TicketStatusEnum: string
 {
     // draft, submitted, in_progress, approved, rejected, cancelled
     case DRAFT = 'draft';
