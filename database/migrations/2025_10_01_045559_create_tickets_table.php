@@ -16,14 +16,12 @@ return new class extends Migration
             $table->foreignUuid('user_id')->constrained('users');
             $table->foreignUuid('letter_type_id')->constrained('letter_types');
 
-            $table->string('number')->index();
+            $table->string('number')->unique();
             $table->string('subject');
-            $table->string('recipient');
-            $table->text('recipient_address');
             
             $table->string('status')->index();
             $table->text('note')->nullable();
-            $table->json('json_content')->nullable();
+            $table->json('json_recipient')->nullable();
 
             $table->softDeletes();
             $table->timestamps();

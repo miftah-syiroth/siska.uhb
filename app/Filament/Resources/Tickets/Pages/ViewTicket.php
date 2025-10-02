@@ -4,7 +4,7 @@ namespace App\Filament\Resources\Tickets\Pages;
 
 use App\Filament\Resources\Tickets\TicketResource;
 use Filament\Resources\Pages\ViewRecord;
-use Filament\Actions\Action;
+use Filament\Actions\EditAction;
 
 class ViewTicket extends ViewRecord
 {
@@ -13,8 +13,7 @@ class ViewTicket extends ViewRecord
     protected function getHeaderActions(): array
     {
         return [
-            Action::make('edit')
-                ->button()
+            EditAction::make()
                 ->icon('heroicon-o-pencil'),
         ];
     }

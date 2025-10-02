@@ -12,17 +12,22 @@ use Illuminate\Database\Eloquent\Casts\Attribute;
 class Ticket extends Model
 {
     use HasUuids, SoftDeletes;
+    
+    const MEDIA_COLLECTION = 'tickets';
 
     protected $fillable = [
         'user_id',
         'letter_type_id',
         'number',
         'subject',
-        'recipient',
-        'recipient_address',
         'status',
         'note',
-        'json_content',
+        'json_recipient',
+    ];
+
+    // casting
+    protected $casts = [
+        'json_recipient' => 'json',
     ];
 
     // accessor

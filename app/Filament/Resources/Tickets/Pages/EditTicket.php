@@ -15,7 +15,8 @@ class EditTicket extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
-            DeleteAction::make(),
+            DeleteAction::make()
+                ->icon('heroicon-o-trash'),
             ForceDeleteAction::make(),
             RestoreAction::make(),
         ];
